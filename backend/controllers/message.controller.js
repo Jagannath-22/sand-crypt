@@ -1,0 +1,81 @@
+// backend/controllers/message.controller.js
+import Conversation from "../models/conversation.model.js";
+import Message from "../models/message.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
+
+
+// ✅ Send message (text + file)
+export const sendMessage = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const { id: receiverId } = req.params;
+    const senderId = req.user._id;
+
+    // find or create conversation
+    let conversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
+
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [senderId, receiverId],
+      });
+    }
+
+    // detect type properly
+    let type = "text";
+    if (req.file) {
+      const mimeType = req.file.mimetype.split("/")[0]; // "image" | "video" | "audio" | "application"
+      type = mimeType === "application" ? "document" : mimeType;
+    }
+
+    // create message object
+    const newMessage = new Message({
+      senderId,
+      receiverId,
+      message: req.file ? "" : message, // only save text if not file
+      type,
+      fileUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+      fileName: req.file ? req.file.originalname : undefined,
+    });
+
+    // push into conversation
+    conversation.messages.push(newMessage._id);
+
+    // save both
+    await Promise.all([conversation.save(), newMessage.save()]);
+
+    // socket.io push to receiver
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.error("Error in sendMessage controller:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+// ✅ Get all messages in conversation
+export const getMessages = async (req, res) => {
+  try {
+    const { id: userToChatId } = req.params;
+    const senderId = req.user._id;
+
+    const conversation = await Conversation.findOne({
+      participants: { $all: [senderId, userToChatId] },
+    }).populate("messages");
+
+    if (!conversation) {
+      return res.status(200).json([]);
+    }
+
+    res.status(200).json(conversation.messages);
+  } catch (error) {
+    console.error("Error in getMessages controller:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

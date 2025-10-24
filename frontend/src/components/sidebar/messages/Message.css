@@ -1,0 +1,25 @@
+.chat-bubble-wrapper {
+  position: relative; /* So emoji is positioned relative to the bubble */
+  display: inline-block;
+}
+
+
+
+.emoji-icon {
+  position: absolute;
+  top: 50%;
+  right: -24px; /* ~2–3 mm from bubble, adjust as needed */
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none; /* initially unclickable */
+  transition: opacity 0.2s ease;
+}
+
+.chat-bubble-wrapper:hover .emoji-icon {
+  opacity: 1;
+  pointer-events: auto; /* clickable only on hover */
+}
+
+.emoji-icon:hover {
+  opacity: 1;
+}
