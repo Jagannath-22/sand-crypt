@@ -25,7 +25,7 @@ export default function EncryptionPanel({ open, onClose }) {
         mode === "encrypt"
           ? await encryptImage(file, params)
           : await decryptImage(file, params);
-      const url = `http://127.0.0.1:5001${res.downloadUrl}`;
+      const url = `http://127.0.0.1:8080${res.downloadUrl}`;
       setResultUrl(url);
     } catch (err) {
       alert(err.message || "Operation failed");

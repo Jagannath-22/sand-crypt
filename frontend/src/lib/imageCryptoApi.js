@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:5001";
+const API_BASE = "http://127.0.0.1:8080";
 
 export async function encryptImage(file, { r1, x01, r2, x02 }) {
   const fd = new FormData();
