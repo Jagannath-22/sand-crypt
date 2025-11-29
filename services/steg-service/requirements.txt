@@ -1,0 +1,6 @@
+Flask==2.2.5
+Flask-Cors==3.0.10
+Werkzeug==2.2.3
+stegano==0.0.46
+numpy==1.25.2
+opencv-python-headless==4.8.0.74
