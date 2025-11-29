@@ -14,7 +14,7 @@ import MeetHome from "./meeting/pages/Home";
 import JoinRoom from "./meeting/pages/JoinRoom";
 import MeetingRoom from "./meeting/pages/MeetingRoom";
 import { MeetingSocketProvider } from "./meeting/MeetingSocketContext";
-
+import AdminPage from "./pages/AdminPage";
 function App() {
   const { authUser, loading } = useAuthContext();
   if (loading) {
@@ -71,6 +71,9 @@ function App() {
               </MeetingSocketProvider>
             }
           />
+
+          <Route path="/admin" element={<AdminPage />} />
+
         </Routes>
         <CallOverlay />
       </SocketContextProvider>

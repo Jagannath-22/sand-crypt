@@ -1,32 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const messageSchema = new mongoose.Schema(
-  {
+// Rename the schema variable if necessary, but the model name is CRITICAL
+const MessageSchema = new mongoose.Schema({
     senderId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-    receiverId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    message: {
-      type: String, // used only if type === "text"
-    },
-    type: {
-      type: String,
-      enum: ["text", "image", "video", "audio"],
-      default: "text",
-    },
-    fileUrl: {
-      type: String, // link to uploaded file (Cloudinary, local storage, etc.)
-    },
-  },
-  { timestamps: true }
-);
+    // ... rest of your schema fields ...
+    timestamp: {
+        type: Date,
+        default: Date.now,
+        index: true
+    }
+}, { timestamps: true });
 
-const Message = mongoose.model("Message", messageSchema);
+// CRITICAL CHANGE: Register the model as 'Message' (lowercase 'message' collection)
+const Message = mongoose.models.Message || mongoose.model('Message', MessageSchema);
 
 export default Message;

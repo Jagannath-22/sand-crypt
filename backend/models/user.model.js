@@ -35,12 +35,17 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true, // Assuming direct signup means verified
     },
+    // *** NEW FIELD FOR ADMIN MANAGEMENT: isBanned ***
+    isBanned: {
+        type: Boolean,
+        default: false,
+        required: true
+    }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt fields
 });
 
 // Important: Prevents Mongoose from trying to recompile the model if it already exists
-// This is good for development with hot-reloading
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User;
